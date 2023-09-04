@@ -1,0 +1,30 @@
+version: '3.8'
+services:
+  db:
+    image: mysql:8.0.32
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+      MYSQL_DATABASE: godb
+      MYSQL_USER: kit
+      MYSQL_PASSWORD: kit
+    ports:
+      - 3306:3306
+    volumes:
+      - ./db-data:/var/lib/mysql
+      
+  api:
+    build: .
+    environment:
+      DSN: "kit:kit@tcp(db:3306)/godb?charset=utf8mb4&parseTime=True&loc=Local"
+    restart: always
+    ports:
+     - 8000:8000
+    depends_on:
+      - db
+    links:
+      - db
+
+
+

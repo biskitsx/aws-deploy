@@ -24,18 +24,27 @@ func main() {
 		})
 	})
 
-	app.Get("/attraction", func(c *fiber.Ctx) error {
+	app.Get("/attractions", func(c *fiber.Ctx) error {
 		attractions := &[]model.Attraction{}
 		database.Db.Find(attractions)
 		return c.JSON(attractions)
 	})
 
-	app.Get("/attraction/:id", func(c *fiber.Ctx) error {
+	app.Get("/attractions/:id", func(c *fiber.Ctx) error {
 		attraction := &model.Attraction{}
 		database.Db.Where("id = ?", c.Params("id")).First(attraction)
 		if attraction.Name == "" {
 			return c.JSON(fiber.Map{"msg": "no attraction with this id"})
 		}
+		return c.JSON(attraction)
+	})
+
+	app.Post("/attractions/", func(c *fiber.Ctx) error {
+		attraction := &model.Attraction{}
+		if err := c.BodyParser(attraction); err != nil {
+			return c.JSON(fiber.Map{"msg": "error kub"})
+		}
+		database.Db.Create(attraction)
 		return c.JSON(attraction)
 	})
 
